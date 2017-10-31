@@ -19,6 +19,7 @@
   "dependencies": {
     "inquirer": "^3.3.0",
     "node-spotify-api": "^1.0.7",
+    "text-animation": "^1.2.7",
     "twitter": "^1.7.1"
   }
 }
