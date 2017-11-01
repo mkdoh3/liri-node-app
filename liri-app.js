@@ -13,7 +13,7 @@ function initGreeting() {
     TextAnimation({
         text: "H e l l o\n Friend!",
         animation: "top-bottom",
-        delay: 30
+        delay: 35
     }, function (err) {
         if (err) {
             throw err
