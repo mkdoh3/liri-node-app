@@ -2,6 +2,7 @@ const keys = require("./keys.js");
 const inquirer = require("inquirer");
 const Twitter = require("twitter");
 const Spotify = require('node-spotify-api');
+const request = require('request')
 const TextAnimation = require("text-animation")
 const twitterClient = new Twitter(keys.twitterKeys);
 const spotifyClient = new Spotify(keys.spotifyKeys)
@@ -40,6 +41,9 @@ function mainMenu(msg) {
         }
         if (r === "Search Spotify") {
             spotifyChoice();
+        }
+        if (r === "Search Movie Database") {
+            movieChoice();
         }
         if (r === "Exit :(") {
             process.stdout.write('\033c');
@@ -206,6 +210,63 @@ function artistResults(response) {
     console.log("******** UNDER CONSTRUCTION **********")
     console.log(response)
     console.log("******** UNDER CONSTRUCTION **********")
+}
+
+function movieChoice() {
+    inquirer.prompt([
+        {
+            type: "list",
+            message: "Pick One!",
+            choices: ["Search Movie", "Return"],
+            name: "choice"
+        }
+    ]).then(function (response) {
+        if (response.choice === "Return") {
+            mainMenu('Welcome Back!');
+        } else {
+            movieSearch()
+        }
+    })
+}
+
+
+function movieSearch() {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "Movie name: ",
+            name: "choice",
+        }
+    ]).then(function (response) {
+        process.stdout.write('\033c');
+        movieCall(response.choice)
+    })
+}
+
+
+function movieCall(movieName) {
+    if (!movieName) {
+        console.log("\n   :( :( :( :( Y'all messin' with me?? No Results Found! Try again :( :( :( :(\n")
+        movieChoice();
+    } else {
+        let queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=40e9cece";
+        request(queryUrl, function (error, response, body) {
+            if (!error && response.statusCode === 200) {
+                let result = JSON.parse(body)
+                console.log("\n<======= RESULTS ========>\n")
+                console.log(`  Title: ${result.Title}
+  Release Year: ${result.Year}
+  IMDB: ${result.Ratings[0].Value}
+  Rotten Tomatoes: ${result.Ratings[1].Value}
+  Cast: ${result.Actors}
+  Plot Summary: ${result.Plot}`)
+                // console.log(JSON.parse(body))
+                //            console.log("The movie's release year was: " + JSON.parse(body).Year);
+            }
+            console.log("\n _-_-_-_-_-_-_-_-_-_-_-_-_-_-\n")
+            mainMenu("Where to now??")
+        });
+    }
 }
 
 
