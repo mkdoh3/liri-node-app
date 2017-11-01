@@ -2,10 +2,11 @@ const keys = require("./keys.js");
 const inquirer = require("inquirer");
 const Twitter = require("twitter");
 const Spotify = require('node-spotify-api');
-const request = require('request')
-const TextAnimation = require("text-animation")
+const request = require('request');
+const TextAnimation = require("text-animation");
+const fs = require("fs");
 const twitterClient = new Twitter(keys.twitterKeys);
-const spotifyClient = new Spotify(keys.spotifyKeys)
+const spotifyClient = new Spotify(keys.spotifyKeys);
 
 
 function initGreeting() {
@@ -28,7 +29,7 @@ function mainMenu(msg) {
         {
             type: "list",
             message: msg,
-            choices: ["See Tweets", "Search Spotify", "Search Movie Database", "Run Commands.txt", "Exit :("],
+            choices: ["See Tweets", "Search Spotify", "Search Movie Database", "Work on my novel..", "Exit :("],
             name: "choice"
     }
 ]).then(function (response) {
@@ -44,6 +45,9 @@ function mainMenu(msg) {
         }
         if (r === "Search Movie Database") {
             movieChoice();
+        }
+        if (r === "Work on my novel..") {
+            readNovel();
         }
         if (r === "Exit :(") {
             process.stdout.write('\033c');
@@ -267,6 +271,73 @@ function movieCall(movieName) {
             mainMenu("Where to now??")
         });
     }
+}
+
+
+function readNovel() {
+    process.stdout.write('\033c');
+    fs.readFile("novel.txt", "utf8", function (error, data) {
+        if (error) {
+            return console.log(error);
+        }
+        console.log(data);
+        console.log("\n\n");
+        novelChoice();
+    })
+}
+
+function novelChoice() {
+    inquirer.prompt([
+        {
+            type: "list",
+            message: "Pick One!",
+            choices: ["Add some more.. (It doesn't matter, no one will ever read it)", "Give up"],
+            name: "choice"
+    }
+]).then(function (response) {
+        if (response.choice === "Add some more.. (It doesn't matter, no one will ever read it)") {
+            mySuperAwesomeNovelThatWillNeverGetPublishedBecausePeopleArentSmartEnoughToAppreciateIt()
+        } else {
+            process.stdout.write('\033c');
+            mainMenu("You should probably just burn that.. What now??")
+
+        }
+    })
+
+}
+
+
+
+
+
+
+
+
+function mySuperAwesomeNovelThatWillNeverGetPublishedBecausePeopleArentSmartEnoughToAppreciateIt() {
+    process.stdout.write('\033c');
+    console.log("\n\n\n\n")
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "Fine, add something :",
+            name: "pureGenius"
+    }
+]).then(function (response) {
+        fs.appendFile("novel.txt", "\n" + response.pureGenius, function (err) {
+
+            if (err) {
+                return console.log(err);
+                mainMenu("Welcome Back!")
+            }
+            process.stdout.write('\033c');
+            console.log("\n\nnovel updated!\n\n");
+            readNovel();
+
+        });
+
+
+    })
+
 }
 
 
